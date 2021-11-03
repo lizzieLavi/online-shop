@@ -1,16 +1,10 @@
-import React from "react";
+import {React,useState} from "react";
 import MenuItem from "../menu_item/menu_item.component";
 import './directory.styles.scss'
 
-class Directory extends React.Component {
-
-    constructor ()
-    {
-        super();
-
-        this.state = 
-        {
-            sections:  [
+const Directory= ()=>
+{
+            const [sections] =useState([
                 {
                   title: 'hats',
                   imageUrl: 'https://i.ibb.co/cvpntL1/hats.png',
@@ -43,19 +37,17 @@ class Directory extends React.Component {
                   id: 5,
                   linkUrl: 'shop/mens'
                 }
-              ]
-        }
-    }
+              ])
+        
+    
 
-    render()
-    {
         return (
             <div className='directory_menu'>
-                {this.state.sections.map(({id,...OtherSectionProps}) =>
+                {sections.map(({id,...OtherSectionProps}) =>
                  <MenuItem key={id} {...OtherSectionProps} />)}
             </div>
-        )
-    }
+        );
 }
+
 
 export default Directory;
