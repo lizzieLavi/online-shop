@@ -5,15 +5,23 @@ import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SignInAndUp from "./pages/sign_in_and_up/sign_in_and_app.component";
-import { auth } from "./firebase/firebase.utils";
+import { auth, CreateUserProfileDocument } from "./firebase/firebase.utils";
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    let unsubscribeFromAuth = auth.onAuthStateChanged((user) =>
-      setCurrentUser(user)
-    );
+    let unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await CreateUserProfileDocument(userAuth);
+
+        userRef.onSnapshot((snapshot) => {
+          setCurrentUser({ id: snapshot.id, ...snapshot.data() });
+        });
+      }
+
+      setCurrentUser({ userAuth });
+    });
 
     // returned function will be called on component unmount
     return () => {
@@ -21,9 +29,14 @@ const App = () => {
     };
   }, []);
 
+  const signOut = () => {
+    setCurrentUser(null);
+    auth.signOut();
+  };
+
   return (
     <div>
-      <Header currentUser={currentUser} />
+      <Header currentUser={currentUser} signOut={signOut} />
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route exact path="/shop" component={ShopPage} />
